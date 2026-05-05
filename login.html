@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="auth-bg">
+<div class="auth-bg">
         <a href="index.html" style="position: absolute; top: 30px; left: 30px; color: white; text-decoration: none; font-weight: 700; z-index: 10; display: flex; align-items: center; gap: 10px;">
             <i class="fa-solid fa-arrow-left"></i> Back to Home
         </a>
@@ -24,20 +24,19 @@
                 <p style="color: #6b7280;">Login to your dashboard</p>
             </div>
             
-            <form id="login-form">
+            <!-- UPDATE 1: Added action and method -->
+            <form id="login-form" action="php/login.php" method="POST">
                 <div class="input-group">
                     <label>Email Address</label>
-                    <input type="email" id="login-email" required placeholder="ranger@ocean.org">
+                    <!-- UPDATE 2: Added name="email" -->
+                    <input type="email" id="login-email" name="email" required placeholder="ranger@ocean.org">
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="login-password" required placeholder="••••••••">
+                    <!-- UPDATE 3: Added name="password" -->
+                    <input type="password" id="login-password" name="password" required placeholder="••••••••">
                 </div>
                 
-                <div id="login-error" style="color: #ef4444; font-size: 0.9rem; margin-bottom: 15px; display: none; text-align: center;">
-                    <i class="fa-solid fa-circle-exclamation"></i> Incorrect credentials
-                </div>
-
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">LOGIN</button>
             </form>
             
