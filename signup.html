@@ -21,18 +21,19 @@
                 <p style="color: #6b7280;">Create your Ranger profile</p>
             </div>
             
-            <form id="signup-form">
+            <!-- UPDATED ACTION PATH HERE -->
+            <form id="signup-form" action="php/signup.php" method="POST">
                 <div class="input-group">
                     <label>Full Name</label>
-                    <input type="text" id="signup-name" required placeholder="Juan Dela Cruz">
+                    <input type="text" id="signup-name" name="fullname" required placeholder="Juan Dela Cruz">
                 </div>
                 <div class="input-group">
                     <label>Email</label>
-                    <input type="email" id="signup-email" required placeholder="ranger@ocean.org">
+                    <input type="email" id="signup-email" name="email" required placeholder="ranger@ocean.org">
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="signup-password" required placeholder="Create a strong password">
+                    <input type="password" id="signup-password" name="password" required placeholder="Create a strong password">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">REGISTER</button>
             </form>
