@@ -4,65 +4,69 @@ include 'connection.php';
 
 // 1. Ensure user is logged in
 if (!isset($_SESSION['user_email'])) {
-    echo "<script>alert('Please login first.'); window.location.href='../login.html';</script>";
+    echo "<script>alert('Please login to submit a report.'); window.location.href='../login.html';</script>";
     exit();
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // 2. Grab the email from the Session (this is our Primary Key)
-    $email = $_SESSION['user_email']; 
+    // 2. Grab main data from the HTML form
+    $email = $_SESSION['user_email']; // From the secure login session
+    $placeName = $_POST['placeName'];
+    $lat = $_POST['lat'];
+    $lng = $_POST['lng'];
+    $type = $_POST['reportType']; // "pollution" or "marine"
+    $date = date('Y-m-d H:i:s'); // Gets the exact current time
     
-    // 3. Grab the basic text data
-    $name = $_POST['name'];
-    $bio = $_POST['bio'];
-    
-    // Handle empty birthday/age gracefully so it doesn't crash the database
-    $birthday = empty($_POST['birthday']) ? NULL : $_POST['birthday'];
-    $age = empty($_POST['age']) ? NULL : (int)$_POST['age'];
-
-    // 4. Handle Profile Picture Upload (Only if a new file was chosen)
-    $updatePicSql = "";
-    if (isset($_FILES['profilePic']) && $_FILES['profilePic']['error'] == 0) {
-        $target_dir = "../uploads/";
+    // 3. Handle Evidence Image Upload safely
+    $imagePath = "";
+    if (isset($_FILES['reportImage']) && $_FILES['reportImage']['error'] == 0) {
+        $target_dir = "../uploads/"; 
+        // Ensure the directory exists
         if (!file_exists($target_dir)) {
             mkdir($target_dir, 0777, true);
         }
-        $fileName = time() . "_profile_" . basename($_FILES["profilePic"]["name"]);
-        $profilePicPath = "uploads/" . $fileName;
-        move_uploaded_file($_FILES["profilePic"]["tmp_name"], "../" . $profilePicPath);
-        
-        // Append this to our SQL query later
-        $updatePicSql = ", profilePic='$profilePicPath'";
+        $fileName = time() . "_" . basename($_FILES["reportImage"]["name"]); // Add timestamp to prevent overwriting
+        $imagePath = "uploads/" . $fileName; // Path to save in the database
+        move_uploaded_file($_FILES["reportImage"]["tmp_name"], "../" . $imagePath);
     }
 
-    // 5. Handle Password Change (Only if they typed a new password)
-    $updatePassSql = "";
-    if (!empty($_POST['password'])) {
-        $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        
-        // Append this to our SQL query later
-        $updatePassSql = ", password='$hashed_password'";
-    }
-
-    // 6. Build the final UPDATE query dynamically
-    $sql = "UPDATE tbl_users SET name=?, bio=?, birthday=?, age=?" . $updatePicSql . $updatePassSql . " WHERE email=?";
+    // 4. THE UPGRADE: Insert into tbl_reports and hardcode the 'Pending' status
+    $sql_report = "INSERT INTO tbl_reports (userEmail, date, lat, lng, placeName, type, image, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')";
+    $stmt1 = mysqli_prepare($conn, $sql_report);
     
-    $stmt = mysqli_prepare($conn, $sql);
+    // "ssddsss" = String, String, Double, Double, String, String, String
+    mysqli_stmt_bind_param($stmt1, "ssddsss", $email, $date, $lat, $lng, $placeName, $type, $imagePath);
     
-    // "sssis" = String, String, String, Integer, String
-    mysqli_stmt_bind_param($stmt, "sssis", $name, $bio, $birthday, $age, $email);
-
-    // 7. Execute and redirect
-    if (mysqli_stmt_execute($stmt)) {
-        // Update the session name just in case they changed it!
-        $_SESSION['user_name'] = $name; 
+    if (mysqli_stmt_execute($stmt1)) {
         
-        echo "<script>alert('Profile updated successfully!'); window.location.href='../profile.html';</script>";
+        // 5. Get the exact ID of the report we just created! (This is our Foreign Key)
+        $newReportId = mysqli_insert_id($conn);
+        
+        // 6. Insert into the correct sub-table based on the Type of report
+        if ($type == "pollution") {
+            $wasteType = $_POST['wasteType'];
+            $severity = $_POST['severity'];
+            
+            $sql_sub = "INSERT INTO tbl_pollution (reportId, wasteType, severity) VALUES (?, ?, ?)";
+            $stmt2 = mysqli_prepare($conn, $sql_sub);
+            mysqli_stmt_bind_param($stmt2, "iss", $newReportId, $wasteType, $severity);
+            mysqli_stmt_execute($stmt2);
+            
+        } else if ($type == "marine") {
+            $species = $_POST['species'];
+            $quantity = (int)$_POST['quantity'];
+            
+            $sql_sub = "INSERT INTO tbl_marine (reportId, species, quantity) VALUES (?, ?, ?)";
+            $stmt2 = mysqli_prepare($conn, $sql_sub);
+            mysqli_stmt_bind_param($stmt2, "isi", $newReportId, $species, $quantity);
+            mysqli_stmt_execute($stmt2);
+        }
+
+        // Redirect directly to the dashboard so they can see their new pending report!
+        echo "<script>alert('Mission Data Logged Successfully!'); window.location.href='../dashboard.html';</script>";
     } else {
-        echo "Error updating profile: " . mysqli_error($conn);
+        echo "Error: " . mysqli_error($conn);
     }
-
-    mysqli_stmt_close($stmt);
 }
 mysqli_close($conn);
 ?>
