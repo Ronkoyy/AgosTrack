@@ -9,8 +9,10 @@
     <!-- External Libraries: FontAwesome, Google Fonts, and Chart.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alasql@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- FIXED: Using the UMD version so charts render correctly -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
@@ -102,8 +104,9 @@
             </div>
 
             <!-- MIDDLE CHARTS GRID -->
-            <div class="grid-2">
-                <div class="card">
+            <div class="grid-3">
+                <!-- 1. Waste Analysis -->
+                <div class="card waste-analysis-container">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 style="font-size: 1.1rem; font-weight: 700;">Waste Analysis</h3>
                         <button class="btn-outline" onclick="app.openWasteDetails()" style="padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; border: 1px solid #cbd5e1; background: white;">
@@ -115,6 +118,15 @@
                     </div>
                 </div>
 
+                <!-- 2. NEW: Severity Alert -->
+                <div class="card">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 20px;">Severity Alert</h3>
+                    <div class="chart-container">
+                        <canvas id="severityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 3. Recent Activity -->
                 <div class="card">
                     <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 20px;">Recent Activity</h3>
                     <div id="activity-feed" class="feed-container">
@@ -125,10 +137,26 @@
 
             <!-- SQL INNER JOIN LEDGER TABLE (With Status & Actions) -->
             <div class="card" style="margin-top: 30px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
                     <h3 style="font-size: 1.1rem; font-weight: 700;">
                         <i class="fa-solid fa-table-list" style="color: var(--primary); margin-right: 5px;"></i> Detailed Reports Ledger
                     </h3>
+                    
+                    <!-- 🚨 SEARCH & SORT UI STARTS HERE 🚨 -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div style="position: relative;">
+                            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                            <input type="text" id="search-ledger" placeholder="Search location, type, or ID..." style="padding: 8px 12px 8px 35px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Poppins', sans-serif; outline: none; width: 250px;">
+                        </div>
+                        <select id="sort-ledger" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Poppins', sans-serif; outline: none; cursor: pointer; color: #475569;">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="pending">Pending First</option>
+                            <option value="completed">Completed First</option>
+                        </select>
+                    </div>
+                    <!-- 🚨 SEARCH & SORT UI ENDS HERE 🚨 -->
+                    
                 </div>
                 
                 <div style="overflow-x: auto;">
