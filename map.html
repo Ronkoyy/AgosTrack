@@ -6,22 +6,29 @@
     <title>Map - AquaSentinel</title>
     <link rel="icon" type="image/png" href="logo.png">
     
+    <!-- Icons and Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Leaflet Map Engine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Supabase Client ( for GitHub Pages Mode) -->
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="app-view">
+        <!-- Mobile Header -->
         <div class="mobile-app-header">
             <button class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
             <span style="font-weight: 800; font-size: 1.2rem; color: #009688;">AquaSentinel</span>
         </div>
         <div class="sidebar-overlay"></div>
 
+        <!-- Sidebar Navigation -->
         <aside id="sidebar">
             <div class="sidebar-header">
                 <i class="fa-solid fa-water" style="color: var(--primary);"></i> 
@@ -37,32 +44,24 @@
             </nav>
         </aside>
 
+        <!-- Main Map View -->
         <main>
             <h2 class="page-title">Surveillance Map</h2>
-            
             <div class="card" style="padding: 0; overflow: hidden; height: 750px; border-radius: 16px; position: relative;">
-                
                 <div id="map" style="height: 100%; width: 100%; z-index: 1;"></div>
 
+                <!-- Legend Overlay -->
                 <div class="map-legend">
                     <h4>Map Legend</h4>
-                    
                     <div class="legend-item">
                         <i class="fa-solid fa-location-dot" style="color: #ef4444;"></i>
                         <span>Pollution Report</span>
                     </div>
-                    
                     <div class="legend-item">
                         <i class="fa-solid fa-location-dot" style="color: #14b8a6;"></i>
                         <span>Marine Sighting</span>
                     </div>
-                    
-                    <div class="legend-item">
-                        <i class="fa-solid fa-location-dot" style="color: #3b82f6;"></i>
-                        <span>Your Location</span>
-                    </div>
                 </div>
-
             </div>
         </main>
     </div>
