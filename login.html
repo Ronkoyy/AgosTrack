@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - AgostTrack</title>
+    <title>Login - AgosTrack</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
 </head>
 <body>
 <div class="auth-bg">
@@ -24,19 +27,17 @@
                 <p style="color: #6b7280;">Login to your dashboard</p>
             </div>
             
-            <!-- UPDATE 1: Added action and method -->
-            <form id="login-form" action="php/login.php" method="POST">
+            <!-- Removed PHP action and method, pure Supabase JS handles this now -->
+            <form id="login-form">
                 <div class="input-group">
                     <label>Email Address</label>
-                    <!-- UPDATE 2: Added name="email" -->
                     <input type="email" id="login-email" name="email" required placeholder="ranger@ocean.org">
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <!-- UPDATE 3: Added name="password" -->
                     <input type="password" id="login-password" name="password" required placeholder="••••••••">
                 </div>
-                
+                <p class="error-text" style="color: #ef4444; text-align: center; margin-bottom: 15px; font-weight: 500; display: none;"></p>
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">LOGIN</button>
             </form>
             
