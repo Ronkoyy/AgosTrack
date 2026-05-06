@@ -6,21 +6,24 @@
     <title>Dashboard - AgosTrack </title>
     <link rel="icon" type="image/png" href="logo.png">
     
+    <!-- External Libraries: FontAwesome, Google Fonts, and Chart.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="app-view">
+        <!-- MOBILE HEADER -->
         <div class="mobile-app-header">
             <button class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
             <span style="font-weight: 800; font-size: 1.2rem; color: #009688;">AgosTrack</span>
         </div>
         <div class="sidebar-overlay"></div>
 
+        <!-- SIDEBAR NAVIGATION -->
         <aside id="sidebar">
             <div class="sidebar-header">
                 <i class="fa-solid fa-water" style="color: var(--primary);"></i> 
@@ -47,7 +50,9 @@
             </nav>
         </aside>
 
+        <!-- MAIN DASHBOARD CONTENT -->
         <main>
+            <!-- HEADER SECTION -->
             <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: end;">
                 <div>
                     <h2 class="page-title">Mission Dashboard</h2>
@@ -61,16 +66,16 @@
                 </div>
             </div>
 
+            <!-- TOP STATS GRID -->
             <div class="grid-3">
                 
-                <div class="card weather-widget">
-                    <div class="widget-title"><i class="fa-solid fa-location-arrow"></i> LIVE CONDITIONS</div>
-                    <div class="weather-flex">
-                        <div>
-                            <span class="weather-temp">--°C</span>
-                            <div class="weather-loc">Loading...</div>
-                        </div>
-                        <i class="fa-solid fa-cloud-sun weather-icon"></i>
+                <!-- Reports Completed Chart Card -->
+                <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: #1f2937;">
+                        <i class="fa-solid fa-list-check" style="color: var(--primary); margin-right: 5px;"></i> Reports Completed
+                    </h3>
+                    <div class="chart-container" style="position: relative; height: 120px; width: 100%;">
+                        <canvas id="reportsStatusChart"></canvas>
                     </div>
                 </div>
 
@@ -95,8 +100,8 @@
                 </div>
             </div>
 
+            <!-- MIDDLE CHARTS GRID -->
             <div class="grid-2">
-                
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 style="font-size: 1.1rem; font-weight: 700;">Waste Analysis</h3>
@@ -112,13 +117,44 @@
                 <div class="card">
                     <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 20px;">Recent Activity</h3>
                     <div id="activity-feed" class="feed-container">
-                        </div>
+                        <!-- Feed items will go here -->
+                    </div>
                 </div>
-
             </div>
+
+            <!-- SQL INNER JOIN LEDGER TABLE (With Status & Actions) -->
+            <div class="card" style="margin-top: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700;">
+                        <i class="fa-solid fa-table-list" style="color: var(--primary); margin-right: 5px;"></i> Detailed Reports Ledger
+                    </h3>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.95rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #f3f4f6; background: #f8fafc;">
+                                <th style="padding: 15px; color: #64748b; font-weight: 600;">Report ID</th>
+                                <th style="padding: 15px; color: #64748b; font-weight: 600;">Ranger Name</th>
+                                <th style="padding: 15px; color: #64748b; font-weight: 600;">Location</th>
+                                <th style="padding: 15px; color: #64748b; font-weight: 600;">Date</th>
+                                <th style="padding: 15px; color: #64748b; font-weight: 600;">Type</th>
+                                <th style="padding: 15px; color: #64748b; font-weight: 600;">Status</th>
+                                <th style="padding: 15px; color: #64748b; font-weight: 600;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="joined-reports-body">
+                            <!-- Data will be injected here by AlaSQL via script.js -->
+                        </tbody>
+                    </table>
+                </div>
+                <p id="empty-ledger-msg" style="text-align: center; color: #9ca3af; margin-top: 20px; display: none;">No reports found in the database.</p>
+            </div>
+
         </main>
     </div>
 
+    <!-- MODALS -->
     <div id="waste-modal" class="modal-overlay hidden-section">
         <div class="modal-content" style="max-width: 400px;">
             <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -132,6 +168,7 @@
         </div>
     </div>
 
+    <!-- Core App Logic -->
     <script src="script.js"></script>
 </body>
 </html>
