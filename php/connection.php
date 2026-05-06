@@ -1,9 +1,9 @@
 <?php
 // Database configuration
-$servername = "localhost"; // Usually 'localhost' when testing on XAMPP/WAMP
-$username = "root";        // The default username for local servers
-$password = "";            // The default password is usually completely blank
-$database = "agostrack"; // The exact name of your database in phpMyAdmin
+$servername = "localhost"; 
+$username = "root";        
+$password = "";           
+$database = "agostrack"; // database name
 
 // Create the connection
 $conn = mysqli_connect($servername, $username, $password, $database);
