@@ -56,18 +56,27 @@
         <!-- MAIN DASHBOARD CONTENT -->
         <main>
             <!-- HEADER SECTION -->
-            <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: end;">
+            <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                 <div>
                     <h2 class="page-title">Mission Dashboard</h2>
                     <p style="color: var(--text-light);">
-                        Welcome back, <span id="user-name-display" style="color: var(--primary); font-weight: 700;">Ranger</span> 👋
+                     Welcome back, <span id="user-name-display" style="color: var(--primary); font-weight: 700;">Ranger</span> 👋
                     </p>
                 </div>
-                
+    
+            <div style="display: flex; align-items: center; gap: 20px;">
+        
                 <div id="dashboard-badge" class="badge-pill hidden-section" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);">
-                    <i class="fa-solid fa-medal"></i> <span id="badge-text">Volunteer</span>
-                </div>
+            <i class="fa-solid fa-medal"></i> <span id="badge-text">Volunteer</span>
             </div>
+
+            <div style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.8); padding: 5px 15px 5px 5px; border-radius: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; cursor: pointer; transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="window.location.href='profile.html'">
+            <img id="top-nav-profile-pic" src="https://ui-avatars.com/api/?name=R&background=009688&color=fff" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <span id="top-nav-profile-name" style="font-weight: 700; color: #1f2937; font-size: 0.95rem;">Ranger</span>
+        </div>
+
+    </div>
+</div>
 
             <!-- TOP STATS GRID -->
             <div class="grid-3">
