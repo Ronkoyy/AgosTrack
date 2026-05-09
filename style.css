@@ -77,15 +77,26 @@ body {
 .auth-card {
     background: rgba(255, 255, 255, 0.85); 
     backdrop-filter: blur(15px);
-    padding: 50px; 
+    padding: 40px 30px; /* Reduced padding for mobile */
     border-radius: 30px; 
-    width: 100%; 
-    max-width: 420px;
+    
+    /* THE KEY FIX: */
+    width: 90%;          /* Uses 90% of the screen on small phones */
+    max-width: 400px;    /* Stops growing once it reaches 400px on desktop */
+    
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
     position: relative; 
     z-index: 2;
     border: 1px solid rgba(255,255,255,0.5);
+    margin: 20px;        /* Adds a little breathing room around the card */
 }
+
+/* Ensure inputs don't stretch the card */
+.auth-card input {
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding doesn't add to the width */
+}
+
 
 /* Landing Page Icons */
 .icon-circle { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 20px; }
