@@ -355,3 +355,24 @@ input[type="radio"]:checked + .type-option.marine { border-color: #0ea5e9; backg
     .page-title { font-size: 1.8rem; }
 }
 
+/* MOBILE RESPONSIVE PROFILE FIX */
+@media (max-width: 768px) {
+    
+    .grid-2 { 
+        display: flex !important;
+        flex-direction: column !important; 
+        gap: 20px;
+    }
+
+   
+    .grid-2 > .card {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+   
+    .history-table-container {
+        overflow-x: auto;
+        width: 100%;
+    }
+}
