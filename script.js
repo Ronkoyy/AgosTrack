@@ -26,8 +26,8 @@ const app = {
         if (session && session.user) {
             currentUserEmail = session.user.email;
             sessionStorage.setItem("loggedInEmail", currentUserEmail);
-        } else if (protectedPages.includes(currentPage) || (currentPage === '' && protectedPages.includes('dashboard.html'))) {
-            
+        } else if (protectedPages.includes(currentPage)) {
+            // ONLY redirect if the exact page name is in the protectedPages array
             window.location.href = "login.html";
             return;
         }
