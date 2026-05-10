@@ -196,6 +196,75 @@ const app = {
         }
     },
 
+    //Dashboard Logic
+     async loadDash() {
+        console.log("Fetching Cloud Dashboard Data...");
+        const email = currentUserEmail;
+
+        //inner join to get the user's name along with their reports
+        try {
+            const { data: reports, error } = await supabaseClient
+                .from('tbl_reports')
+                .select('*, tbl_users(name)') 
+                .eq('userEmail', email)
+                .order('id', { ascending: false });
+
+                 if (error) throw error;
+            this.allReports = reports || [];
+
+            // Fetch Chart Data including Severity for our new Pie Chart
+            let formattedChartData = [];
+            let severityCounts = { 'High': 0, 'Medium': 0, 'Low': 0 }; 
+            const reportIds = this.allReports.map(r => r.id);
+
+            // Fetch pollution details ONLY for the reports this user has submitted
+            if (reportIds.length > 0) {
+                const { data: chartData } = await supabaseClient
+                    .from('tbl_pollution')
+                    .select('wasteType, severity') 
+                    .in('reportId', reportIds);
+
+                // Tally up the data for Chart.js
+                if (chartData && chartData.length > 0) {
+                    const wasteCounts = {};
+                    chartData.forEach(item => {
+                        wasteCounts[item.wasteType] = (wasteCounts[item.wasteType] || 0) + 1;
+                        if(item.severity) {
+                            severityCounts[item.severity] = (severityCounts[item.severity] || 0) + 1;
+                        }
+                    });
+                    
+                    formattedChartData = Object.keys(wasteCounts).map(key => ({
+                        wasteType: key,
+                        count: wasteCounts[key]
+                    }));
+                }
+            }
+
+            // Calculate simple stats for the top cards
+            let pollutionCount = 0;
+            let marineCount = 0;
+            this.allReports.forEach(r => {
+                if(r.type === 'pollution') pollutionCount++;
+                if(r.type === 'marine') marineCount++;
+            });
+
+            // Package the data and send it to the UI and Charts
+            let stats = {
+                pollution: pollutionCount,
+                marine: marineCount,
+                recent: this.allReports,
+                chart: formattedChartData,
+                severity: severityCounts 
+            };
+
+
+
+
+
+
+
+
 
 
 
