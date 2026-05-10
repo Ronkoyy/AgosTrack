@@ -486,7 +486,7 @@ const app = {
 
             if (reportError) throw reportError;
             const newId = reportData[0].id; 
-            
+
             if (type === 'pollution') {
                 const { error: polError } = await supabaseClient.from('tbl_pollution').insert([
                     { reportId: newId, wasteType: formData.get('wasteType'), severity: formData.get('severity') }
@@ -511,6 +511,17 @@ const app = {
             }
         }
     },
+//marking a report as completed by updating its status in the database.
+     async markDone(id) {
+        const { error } = await supabaseClient.from('tbl_reports').update({ status: 'Completed' }).eq('id', id);
+        if (error) {
+            this.showNotification("Error updating status.", "error");
+        } else {
+            this.showNotification('Status Updated!');
+            this.loadDash(); 
+        }
+    },
+
 
 
 
