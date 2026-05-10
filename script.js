@@ -298,6 +298,60 @@ const app = {
         }
     },
 
+    //Seaerch and sort logic for better ux on the dashboard.
+
+     renderLedger() {
+        const tbody = document.getElementById('joined-reports-body');
+        if (!tbody) return;
+
+        const searchTerm = (document.getElementById('search-ledger')?.value || "").toLowerCase();
+        const sortValue = document.getElementById('sort-ledger')?.value || 'newest';
+
+        // Filter the array based on user input
+        let filtered = this.allReports.filter(r => 
+            (r.placeName || "").toLowerCase().includes(searchTerm) || 
+            (r.type || "").toLowerCase().includes(searchTerm) ||
+            r.id.toString().includes(searchTerm)
+        );
+
+        // Sort the array based on user selection
+        filtered.sort((a, b) => {
+            if (sortValue === 'newest') return b.id - a.id;
+            if (sortValue === 'oldest') return a.id - b.id;
+            if (sortValue === 'pending') return a.status === 'Pending' ? -1 : 1;
+            if (sortValue === 'completed') return a.status === 'Completed' ? -1 : 1;
+            return 0;
+        });
+
+        // Inject the HTML
+        tbody.innerHTML = '';
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:#9ca3af;">No reports found.</td></tr>';
+        } else {
+            filtered.forEach(r => {
+                let statusColor = r.status === 'Completed' ? '#10b981' : '#f59e0b';
+                let actionBtn = r.status === 'Pending' 
+                    ? `<button onclick="app.markDone(${r.id})" style="background:#009688; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">Mark Done</button>` 
+                    : `<span style="color:#10b981; font-weight:bold;"><i class="fa-solid fa-check-circle"></i> Done</span>`;
+                let icon = r.type === 'pollution' ? 'fa-trash-can' : 'fa-fish-fins';
+                let iconColor = r.type === 'pollution' ? '#ef4444' : '#0ea5e9';
+                let rangerName = r.tbl_users ? r.tbl_users.name : currentUserName;
+
+                tbody.innerHTML += `
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 15px; font-weight:600;">#${r.id}</td>
+                        <td style="padding: 15px;"><b>${rangerName}</b></td>
+                        <td style="padding: 15px; color:#475569;">${r.placeName}</td>
+                        <td style="padding: 15px; color:#64748b;">${new Date(r.date).toLocaleDateString()}</td>
+                        <td style="padding: 15px; text-transform:capitalize;"><i class="fa-solid ${icon}" style="color:${iconColor}; margin-right:5px;"></i> ${r.type}</td>
+                        <td style="padding: 15px;"><span style="color:${statusColor}; font-weight:700; background:${statusColor}20; padding:4px 8px; border-radius:20px;">${r.status}</span></td>
+                        <td style="padding: 15px;">${actionBtn}</td>
+                    </tr>`;
+            });
+        }
+    },
+
+
 
 
 
