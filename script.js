@@ -103,6 +103,37 @@ const app = {
         }
     },
 
+     async updateGlobalUI() {
+        // 1. Update the welcome text
+        const display = document.getElementById('user-name-display');
+        if (display && currentUserName) display.innerText = currentUserName;
+
+        // 2. Update the new Top Nav profile name
+        const topNavName = document.getElementById('top-nav-profile-name');
+        if (topNavName && currentUserName) topNavName.innerText = currentUserName;
+
+        // 3. Fetch the profile picture dynamically from Supabase
+        if (currentUserEmail) {
+            try {
+                const { data: user } = await supabaseClient.from('tbl_users').select('profilePic').eq('email', currentUserEmail).single();
+                const topNavPic = document.getElementById('top-nav-profile-pic');
+                
+                if (topNavPic) {
+                    if (user && user.profilePic && user.profilePic !== "NULL") {
+                        // If they uploaded a picture, use it!
+                        topNavPic.src = user.profilePic;
+                    } else {
+                        // If no picture, generate a cool initial avatar based on their name
+                        topNavPic.src = `https://ui-avatars.com/api/?name=${currentUserName}&background=009688&color=fff&bold=true`;
+                    }
+                }
+            } catch (err) {
+                console.error("Could not load top nav profile picture", err);
+            }
+        }
+    },
+
+
 
 
 
