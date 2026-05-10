@@ -4,7 +4,13 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 //to let the user stay lgged in even after refreshing the page.
 let currentUserEmail = sessionStorage.getItem("loggedInEmail") || null;
 let currentUserName = sessionStorage.getItem("loggedInName") || "Ranger"; 
-const currentPage = window.location.pathname.split("/").pop();
+
+
+let currentPage = window.location.pathname.split("/").pop();
+if (currentPage === "" || !currentPage.includes(".html")) {
+    currentPage = "index.html";
+}
+
 const protectedPages = ["dashboard.html", "map.html", "report.html", "profile.html"];
 
 const app = {
@@ -19,17 +25,25 @@ const app = {
     allReports: [],
 
     async init() {
-        console.log("AgosTrack Supabase Engine Initializing...");
+console.log("AgosTrack Supabase Engine Initializing...");
         
-        //check if the user is logged in and redirect to login page if not.
+        // --- BULLETPROOF AUTH CHECK ---
         const { data: { session } } = await supabaseClient.auth.getSession();
+        
         if (session && session.user) {
+            // User IS logged in
             currentUserEmail = session.user.email;
             sessionStorage.setItem("loggedInEmail", currentUserEmail);
-        } else if (protectedPages.includes(currentPage)) {
-            // ONLY redirect if the exact page name is in the protectedPages array
-            window.location.href = "login.html";
-            return;
+            
+            if (currentPage === 'login.html') {
+                window.location.href = "dashboard.html";
+                return;
+            }
+        } else {
+            if (protectedPages.includes(currentPage)) {
+                window.location.href = "login.html";
+                return; 
+            }
         }
 
         this.fixLeafletIcons();
