@@ -602,31 +602,77 @@ const app = {
         }
     },
 
+    //Profile Editing Logic
+    async openEditProfile() {
+        const { data: user } = await supabaseClient.from('tbl_users').select('*').eq('email', currentUserEmail).single();
+        if(user) {
+            document.getElementById('edit-name').value = user.name;
+            document.getElementById('edit-bio').value = user.bio || "";
+            document.getElementById('edit-birthday').value = user.birthday || "";
+            document.getElementById('edit-age').value = user.age || "";
+            document.getElementById('edit-profile-modal')?.classList.remove('hidden-section');
+        }
+    },
 
+    closeEditProfile() { document.getElementById('edit-profile-modal')?.classList.add('hidden-section'); },
 
+    async saveProfile(e) {
+        const formData = new FormData(e.target);
+        const name = formData.get('name');
+        const file = formData.get('profilePic');
+        let base64Img = null;
 
+        const btn = e.target.querySelector('button[type="submit"]');
+        let originalText = btn.innerText;
+        btn.innerText = "Saving...";
+        btn.disabled = true;
 
+        if (file && file.size > 0) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            await new Promise(resolve => {
+                reader.onload = () => { base64Img = reader.result; resolve(); };
+            });
+        }
 
+        const updates = { name: name, bio: formData.get('bio'), birthday: formData.get('birthday'), age: formData.get('age') ? parseInt(formData.get('age')) : null };
+        if (base64Img) updates.profilePic = base64Img;
 
+        const { error } = await supabaseClient.from('tbl_users').update(updates).eq('email', currentUserEmail);
+        
+        btn.innerText = originalText;
+        btn.disabled = false;
 
+        if (error) {
+            this.showNotification("Failed to update profile.", 'error');
+        } else {
+            sessionStorage.setItem("loggedInName", name);
+            this.showNotification('Profile Updated!');
+            this.closeEditProfile();
+            this.loadProfile();
+            this.updateGlobalUI();
+        }
+    },
 
+ toggleFormFields() {
+        const isPollution = document.querySelector('input[value="pollution"]').checked;
+        const pollutionFields = document.getElementById('fields-pollution');
+        const marineFields = document.getElementById('fields-marine');
+        if (pollutionFields) pollutionFields.classList.toggle('hidden-section', !isPollution);
+        if (marineFields) marineFields.classList.toggle('hidden-section', isPollution);
+    },
 
+    createPin(color) {
+        return L.divIcon({ className: 'bg-transparent', html: `<i class="fa-solid fa-location-dot fa-3x" style="color: ${color};"></i>`, iconSize: [30, 42], iconAnchor: [15, 42], popupAnchor: [0, -40] });
+    },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    fixLeafletIcons() {
+        if(typeof L !== 'undefined' && L.Icon.Default) {
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+            });
+        }
+    },
 };
