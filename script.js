@@ -351,6 +351,73 @@ const app = {
         }
     },
 
+    //Chart logic
+     initCharts(data) {
+        if (typeof Chart === 'undefined') {
+            console.error("Chart.js failed to load!");
+            return; 
+        }
+
+        // 1. Waste Chart (Doughnut)
+        const wasteCanvas = document.getElementById('wasteChart');
+        if (wasteCanvas && data.chart) {
+            if(this.wasteChartInstance) this.wasteChartInstance.destroy(); // Clear old chart
+            const labels = data.chart.map(item => item.wasteType);
+            const counts = data.chart.map(item => item.count);
+            this.wasteChartInstance = new Chart(wasteCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No Data'],
+                    datasets: [{
+                        data: counts.length > 0 ? counts : [1],
+                        backgroundColor: counts.length > 0 ? ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'] : ['#e2e8f0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        // 2. Severity Alert Chart (Pie)
+        const severityCanvas = document.getElementById('severityChart');
+        if (severityCanvas && data.severity) {
+            if(this.severityChartInstance) this.severityChartInstance.destroy();
+            this.severityChartInstance = new Chart(severityCanvas, {
+                type: 'pie',
+                data: {
+                    labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+                    datasets: [{
+                        data: [data.severity['High'] || 0, data.severity['Medium'] || 0, data.severity['Low'] || 0],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981'], 
+                        borderWidth: 0
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        // 3. Status Chart (Bar)
+        const statusCanvas = document.getElementById('reportsStatusChart');
+        if (statusCanvas && data.recent) {
+            if(this.statusChartInstance) this.statusChartInstance.destroy();
+            let completed = data.recent.filter(r => r.status === 'Completed').length;
+            let pending = data.recent.filter(r => r.status === 'Pending').length;
+            this.statusChartInstance = new Chart(statusCanvas, {
+                type: 'bar',
+                data: {
+                    labels: ['Pending', 'Completed'],
+                    datasets: [{ label: 'Mission Status', data: [pending, completed], backgroundColor: ['#f59e0b', '#10b981'], borderRadius: 6 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+    },
+
+
 
 
 
