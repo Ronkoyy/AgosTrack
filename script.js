@@ -594,7 +594,11 @@ async compressImage(file, maxWidth = 800) {
         const email = currentUserEmail;
         
         // Fetch user data and their specific history
-        const { data: user } = await supabaseClient.from('tbl_users').select('*').eq('email', email).single();
+        const { data: history } = await supabaseClient
+        .from('tbl_reports')
+        .select('id, date, placeName, type') // 🚨 NOTICE: We left out the 'image' column!
+        .eq('userEmail', email)
+        .order('id', { ascending: false });
         const { data: history } = await supabaseClient.from('tbl_reports').select('*').eq('userEmail', email).order('id', { ascending: false });
         
         if (user) {
