@@ -258,6 +258,48 @@ const app = {
                 severity: severityCounts 
             };
 
+            if(document.getElementById('stat-pollution')) document.getElementById('stat-pollution').innerText = stats.pollution;
+            if(document.getElementById('stat-marine')) document.getElementById('stat-marine').innerText = stats.marine;
+
+            this.renderLedger(); // Draw the table
+
+            // Build the Recent Activity Feed dynamically
+            const activityFeed = document.getElementById('activity-feed');
+            if(activityFeed) {
+                activityFeed.innerHTML = '';
+                if(this.allReports.length === 0) {
+                    activityFeed.innerHTML = '<p style="color:#9ca3af; text-align:center; padding:10px;">Coastline is clear.</p>';
+                } else {
+                    this.allReports.slice(0, 4).forEach(r => {
+                        let iconClass = r.type === 'pollution' ? 'fa-triangle-exclamation' : 'fa-otter';
+                        let iconColor = r.type === 'pollution' ? '#ef4444' : '#0ea5e9';
+                        // Utilizing the joined data!
+                        let rangerName = r.tbl_users ? r.tbl_users.name : currentUserName;
+                        
+                        activityFeed.innerHTML += `
+                            <div style="display:flex; align-items:flex-start; gap:15px; margin-bottom:15px; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">
+                                <div style="background:${iconColor}20; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <i class="fa-solid ${iconClass}" style="color:${iconColor};"></i>
+                                </div>
+                                <div>
+                                    <p style="margin:0; font-weight:600;">${r.placeName}</p>
+                                    <p style="margin:0; font-size:0.8rem; color:#64748b;">Reported by ${rangerName}</p>
+                                </div>
+                            </div>`;
+                    });
+                }
+            }
+
+            this.initCharts(stats);
+
+        } catch (error) {
+            console.error("Dashboard Sync Error:", error);
+            this.showNotification("Error loading dashboard data.", "error");
+        }
+    },
+
+
+
 
 
 
