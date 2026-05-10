@@ -675,4 +675,91 @@ const app = {
             });
         }
     },
+
+     toggleFormFields() {
+        const isPollution = document.querySelector('input[value="pollution"]').checked;
+        const pollutionFields = document.getElementById('fields-pollution');
+        const marineFields = document.getElementById('fields-marine');
+        if (pollutionFields) pollutionFields.classList.toggle('hidden-section', !isPollution);
+        if (marineFields) marineFields.classList.toggle('hidden-section', isPollution);
+    },
+
+    createPin(color) {
+        return L.divIcon({ className: 'bg-transparent', html: `<i class="fa-solid fa-location-dot fa-3x" style="color: ${color};"></i>`, iconSize: [30, 42], iconAnchor: [15, 42], popupAnchor: [0, -40] });
+    },
+
+    fixLeafletIcons() {
+        if(typeof L !== 'undefined' && L.Icon.Default) {
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+            });
+        }
+    },
+
+    // Modal logic to show detailed breakdown of waste
+    async openWasteDetails() {
+        const listContainer = document.getElementById('waste-stats-list');
+        document.getElementById('waste-modal')?.classList.remove('hidden-section');
+        
+        if (listContainer) listContainer.innerHTML = '<p style="text-align:center; color:#64748b;"><i class="fa-solid fa-spinner fa-spin"></i> Analyzing Data...</p>';
+
+        const reportIds = this.allReports.map(r => r.id);
+        if (reportIds.length === 0) {
+            if (listContainer) listContainer.innerHTML = '<p style="text-align:center; color:#64748b;">No waste data available yet.</p>';
+            return;
+        }
+
+        const { data: chartData } = await supabaseClient
+            .from('tbl_pollution')
+            .select('wasteType')
+            .in('reportId', reportIds);
+
+        if (listContainer && chartData) {
+            const wasteCounts = {};
+            chartData.forEach(item => {
+                wasteCounts[item.wasteType] = (wasteCounts[item.wasteType] || 0) + 1;
+            });
+            
+            listContainer.innerHTML = '';
+            const keys = Object.keys(wasteCounts);
+            
+            if(keys.length === 0) {
+                listContainer.innerHTML = '<p style="text-align:center; color:#64748b;">No pollution details found.</p>';
+            } else {
+                keys.forEach(key => {
+                    listContainer.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; padding:12px 15px; background:#f8fafc; border-radius:8px; border: 1px solid #e2e8f0;">
+                            <span style="font-weight:600; text-transform:capitalize; color:#334155;"><i class="fa-solid fa-trash-can" style="color:#94a3b8; margin-right:8px;"></i> ${key}</span>
+                            <span style="font-weight:700; color:#009688; background:#00968820; padding:2px 10px; border-radius:20px;">${wasteCounts[key]}</span>
+                        </div>
+                    `;
+                });
+            }
+        }
+    },
+
+    closeWasteModal() {
+        document.getElementById('waste-modal')?.classList.add('hidden-section');
+    },
+
+    // Terminates secure session
+    async logout() { 
+        await supabaseClient.auth.signOut();
+        sessionStorage.clear(); 
+        window.location.href = "login.html"; 
+    }
 };
+window.addEventListener('scroll', () => {
+            const nav = document.getElementById('main-nav');
+            const hero = document.querySelector('.hero-bg'); 
+            if(nav) {
+                let threshold = 50; 
+                if (hero) threshold = hero.offsetHeight - 80; 
+                if(window.scrollY > threshold) nav.classList.add('scrolled');
+                else nav.classList.remove('scrolled');
+            }
+        });
+
+window.onload = () => app.init();
