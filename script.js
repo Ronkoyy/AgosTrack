@@ -432,23 +432,48 @@ console.log("AgosTrack Supabase Engine Initializing...");
     },
 
     //Map Logic
-    async loadMap() {
+   async loadMap() {
         if(!this.map) {
             this.map = L.map('map').setView([8.37, 124.86], 11); // Centered on Bukidnon
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
         }
         
-        // Fetch ALL public reports to plot on the main map
-        const { data, error } = await supabaseClient.from('tbl_reports').select('*');
+        // added sql joim to also get the ranger's name along with the report data.
+        const { data, error } = await supabaseClient
+            .from('tbl_reports')
+            .select('*, tbl_users(name)'); 
+            
         if (error || !data) return;
 
         this.markers.forEach(m => this.map.removeLayer(m));
         this.markers = [];
         data.forEach(report => {
-            let color = report.type === 'pollution' ? '#ef4444' : '#009688';
+            
+            // Determine Pin Color based on Status first
+            let color;
+            if (report.status === 'Completed') {
+                color = '#10b981'; // Emerald Green
+            } else {
+                color = report.type === 'pollution' ? '#ef4444' : '#0ea5e9'; // Red or Blue
+            }
+
+            // Safely grab the Ranger's name from the joined data
+            let rangerName = report.tbl_users ? report.tbl_users.name : 'Volunteer Ranger';
+
             let img = report.image && report.image !== 'NULL' ? `<img src="${report.image}" style="width:100%; height:100px; object-fit:cover; border-radius:5px; margin-bottom:5px;">` : '';
+            
+            // Create the marker
             let marker = L.marker([parseFloat(report.lat), parseFloat(report.lng)], { icon: this.createPin(color) }).addTo(this.map);
-            marker.bindPopup(`<div>${img}<h4>${report.placeName}</h4><p>Status: ${report.status}</p></div>`);
+            
+            // 🚨 THE FIX: Added the Ranger's name to the popup HTML
+            marker.bindPopup(`
+                <div style="font-family: inherit;">
+                    ${img}
+                    <h4 style="margin: 0 0 5px 0; color: #1f2937; font-size: 1.1rem;">${report.placeName}</h4>
+                    <p style="margin: 0; color: #64748b; font-size: 0.85rem;">Reported by: <strong>${rangerName}</strong></p>
+                    <p style="margin: 5px 0 0 0; color: #64748b; font-size: 0.9rem;">Status: <strong style="color:${color};">${report.status}</strong></p>
+                </div>
+            `);
             this.markers.push(marker);
         });
     },
