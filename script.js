@@ -586,10 +586,7 @@ const app = {
     async executeDelete() {
         if (!this.reportToDelete) return; 
         
-        // 🚨 DEFENSE NOTE: CASCADE DELETION 🚨
-        // Because we set up 'ON DELETE CASCADE' in PostgreSQL when creating the 
-        // tbl_pollution and tbl_marine tables, deleting the main report here 
-        // automatically deletes the linked rows in those sub-tables!
+        
         const { error } = await supabaseClient.from('tbl_reports').delete().eq('id', this.reportToDelete);
         
         if (error) {
