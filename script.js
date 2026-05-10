@@ -522,6 +522,57 @@ const app = {
         }
     },
 
+    //Profile Management Logic
+     async loadProfile() {
+        const email = currentUserEmail;
+        
+        // Fetch user data and their specific history
+        const { data: user } = await supabaseClient.from('tbl_users').select('*').eq('email', email).single();
+        const { data: history } = await supabaseClient.from('tbl_reports').select('*').eq('userEmail', email).order('id', { ascending: false });
+        
+        if (user) {
+            // Update UI with user data
+            document.getElementById('profile-name').innerText = user.name;
+            document.getElementById('display-bio').innerText = user.bio || "No bio set yet.";
+            document.getElementById('display-birthday').innerText = user.birthday || "-";
+            document.getElementById('display-age').innerText = user.age || "-";
+            
+            // Handle Profile Picture
+            const initials = document.getElementById('profile-initials-large');
+            const img = document.getElementById('profile-img-large');
+            if (user.profilePic && user.profilePic !== "NULL") {
+                img.src = user.profilePic;
+                img.classList.remove('hidden-section');
+                initials.classList.add('hidden-section');
+            } else {
+                initials.innerText = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                initials.classList.remove('hidden-section');
+                img.classList.add('hidden-section');
+            }
+            
+            // Render History Table
+            const body = document.getElementById('history-table-body');
+            if (body && history) {
+                body.innerHTML = '';
+                if (history.length === 0) {
+                    document.getElementById('empty-history-msg').style.display = 'block';
+                } else {
+                    document.getElementById('empty-history-msg').style.display = 'none';
+                    history.forEach(h => {
+                        body.innerHTML += `
+                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                <td style="padding: 15px;">${new Date(h.date).toLocaleDateString()}</td>
+                                <td style="padding: 15px;">${h.placeName}</td>
+                                <td style="padding: 15px; text-transform:capitalize;">${h.type}</td>
+                                <td style="padding: 15px;"><button onclick="app.deleteReport(${h.id})" style="background:#ef4444; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;"><i class="fa-solid fa-trash"></i> Delete</button></td>
+                            </tr>`;
+                    });
+                }
+            }
+        }
+    },
+
+
 
 
 
