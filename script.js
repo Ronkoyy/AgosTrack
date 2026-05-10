@@ -133,6 +133,35 @@ const app = {
         }
     },
 
+    //Authentication
+
+    async login(e) {
+        const formData = new FormData(e.target);
+        const email = formData.get('email').toLowerCase().trim();
+        const password = formData.get('password');
+        
+        const btn = e.target.querySelector('button[type="submit"]');
+        let originalText = btn.innerText;
+        btn.innerText = "Authenticating...";
+        btn.disabled = true;
+
+        // 1. Authenticate with Supabase's secure Auth server
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        
+        if (error) {
+            this.showNotification(error.message, 'error');
+            btn.innerText = originalText;
+            btn.disabled = false;
+        } else {
+            // 2. If successful, fetch the user's custom name from our tbl_users database
+            const { data: userProfile } = await supabaseClient.from('tbl_users').select('name').eq('email', email).single();
+            sessionStorage.setItem('loggedInEmail', email);
+            sessionStorage.setItem('loggedInName', userProfile ? userProfile.name : "Ranger");
+            window.location.href = 'dashboard.html';
+        }
+    },
+
+
 
 
 
