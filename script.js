@@ -196,6 +196,24 @@ const app = {
         }
     },
 
+    //Dashboard Logic
+     async loadDash() {
+        console.log("Fetching Cloud Dashboard Data...");
+        const email = currentUserEmail;
+
+        //inner join to get the user's name along with their reports
+        try {
+            const { data: reports, error } = await supabaseClient
+                .from('tbl_reports')
+                .select('*, tbl_users(name)') 
+                .eq('userEmail', email)
+                .order('id', { ascending: false });
+
+
+
+
+
+
 
 
 
