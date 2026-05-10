@@ -387,3 +387,22 @@ input[type="radio"]:checked + .type-option.marine { border-color: #0ea5e9; backg
         width: 100%;
     }
 }
+
+
+
+.leaflet-popup-content h4 {
+    color: #1f2937 !important;         /* Solid dark gray color */
+    text-shadow: none !important;      /* Removes any leaking shadows */
+    -webkit-text-stroke: 0 !important; /* Removes any hollow outlines */
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    margin: 10px 0 5px 0 !important;
+    font-family: inherit !important;
+}
+
+.leaflet-popup-content p {
+    color: #64748b !important;
+    text-shadow: none !important;
+    margin: 0 !important;
+    font-size: 0.9rem !important;
+}
