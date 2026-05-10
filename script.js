@@ -593,8 +593,7 @@ async compressImage(file, maxWidth = 800) {
      async loadProfile() {
         
         const email = currentUserEmail;
-        const cachedName = sessionStorage.getItem("loggedInName");
-    if (cachedName) document.getElementById('profile-name').innerText = cachedName;
+        
         
         // Fetch user data and their specific history
         const { data: history } = await supabaseClient
