@@ -417,6 +417,42 @@ const app = {
         }
     },
 
+    //Map Logic
+    async loadMap() {
+        if(!this.map) {
+            this.map = L.map('map').setView([8.37, 124.86], 11); // Centered on Bukidnon
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+        }
+        
+        // Fetch ALL public reports to plot on the main map
+        const { data, error } = await supabaseClient.from('tbl_reports').select('*');
+        if (error || !data) return;
+
+        this.markers.forEach(m => this.map.removeLayer(m));
+        this.markers = [];
+        data.forEach(report => {
+            let color = report.type === 'pollution' ? '#ef4444' : '#009688';
+            let img = report.image && report.image !== 'NULL' ? `<img src="${report.image}" style="width:100%; height:100px; object-fit:cover; border-radius:5px; margin-bottom:5px;">` : '';
+            let marker = L.marker([parseFloat(report.lat), parseFloat(report.lng)], { icon: this.createPin(color) }).addTo(this.map);
+            marker.bindPopup(`<div>${img}<h4>${report.placeName}</h4><p>Status: ${report.status}</p></div>`);
+            this.markers.push(marker);
+        });
+    },
+
+    // The map used purely for picking coordinates on the 'Submit Report' page
+    loadPickerMap() {
+        const pMap = L.map('picker-map').setView([8.37, 124.86], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(pMap);
+        pMap.on('click', (e) => {
+            document.getElementById('input-location').value = `${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}`;
+            document.getElementById('hidden-lat').value = e.latlng.lat;
+            document.getElementById('hidden-lng').value = e.latlng.lng;
+            if (this.tempMarker) pMap.removeLayer(this.tempMarker);
+            this.tempMarker = L.marker(e.latlng, {icon: this.createPin('#3b82f6')}).addTo(pMap);
+        });
+    },
+
+
 
 
 
