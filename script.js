@@ -491,6 +491,37 @@ console.log("AgosTrack Supabase Engine Initializing...");
         });
     },
 
+    // Function to shrink mobile photos before uploading
+async compressImage(file, maxWidth = 800) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const scaleFactor = maxWidth / img.width;
+                
+                // Only shrink if the image is actually wider than 800px
+                if (img.width > maxWidth) {
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scaleFactor;
+                } else {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                }
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Convert to a slightly compressed JPEG (0.7 quality)
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+        };
+    });
+},
+
     //Logic for Submitting data to the cloud and saving it to our database.
     async handleReport(e) {
         const formData = new FormData(e.target);
@@ -511,12 +542,9 @@ console.log("AgosTrack Supabase Engine Initializing...");
 
         // Convert image file to a string format (Base64) so it can be saved in the database
         if (file && file.size > 0) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            await new Promise(resolve => {
-                reader.onload = () => { base64Img = reader.result; resolve(); };
-            });
-        }
+    // REPLACE your old FileReader code with this:
+    base64Img = await this.compressImage(file);
+}
 
         try {
             const { data: reportData, error: reportError } = await supabaseClient.from('tbl_reports').insert([
