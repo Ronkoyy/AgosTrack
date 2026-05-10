@@ -160,6 +160,41 @@ const app = {
             window.location.href = 'dashboard.html';
         }
     },
+        async signup(e) {
+        const formData = new FormData(e.target);
+        const name = formData.get('name');
+        const email = formData.get('email').toLowerCase().trim();
+        const password = formData.get('password');
+        
+        const btn = e.target.querySelector('button[type="submit"]');
+        let originalText = btn.innerText;
+        btn.innerText = "Registering...";
+        btn.disabled = true;
+
+        // 1. Create the secure login credentials
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+        
+        if (error) {
+            this.showNotification(error.message, 'error');
+            btn.innerText = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        // 2. Insert their profile information into our custom public table
+        const { error: dbError } = await supabaseClient.from('tbl_users').insert([
+            { email: email, name: name, rank: 'Volunteer' }
+        ]);
+
+        if (dbError) {
+            this.showNotification("Error saving profile details.", 'error');
+            btn.innerText = originalText;
+            btn.disabled = false;
+        } else {
+            this.showNotification('Registration successful! Please login.', 'success');
+            setTimeout(() => window.location.href = 'login.html', 1500);
+        }
+    },
 
 
 
