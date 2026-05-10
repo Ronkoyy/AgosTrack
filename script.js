@@ -452,6 +452,67 @@ const app = {
         });
     },
 
+    //Logic for Submitting data to the cloud and saving it to our database.
+    async handleReport(e) {
+        const formData = new FormData(e.target);
+        const submitBtn = document.getElementById('btn-submit-report');
+        let originalBtnText = "";
+        
+        if(submitBtn) {
+            originalBtnText = submitBtn.innerText;
+            submitBtn.innerText = "Submitting to Cloud...";
+            submitBtn.disabled = true;
+        }
+
+        const email = currentUserEmail;
+        const type = formData.get('reportType').toLowerCase().trim();
+        const date = new Date().toISOString();
+        const file = formData.get('reportImage');
+        let base64Img = 'NULL';
+
+        // Convert image file to a string format (Base64) so it can be saved in the database
+        if (file && file.size > 0) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            await new Promise(resolve => {
+                reader.onload = () => { base64Img = reader.result; resolve(); };
+            });
+        }
+
+        try {
+            const { data: reportData, error: reportError } = await supabaseClient.from('tbl_reports').insert([
+                { userEmail: email, date: date, lat: parseFloat(formData.get('lat')), lng: parseFloat(formData.get('lng')), placeName: formData.get('placeName'), type: type, image: base64Img, status: 'Pending' }
+            ]).select();
+
+            if (reportError) throw reportError;
+            const newId = reportData[0].id; 
+            
+            if (type === 'pollution') {
+                const { error: polError } = await supabaseClient.from('tbl_pollution').insert([
+                    { reportId: newId, wasteType: formData.get('wasteType'), severity: formData.get('severity') }
+                ]);
+                if (polError) throw polError;
+            } else if (type === 'marine') {
+                const { error: marError } = await supabaseClient.from('tbl_marine').insert([
+                    { reportId: newId, species: formData.get('species'), quantity: parseInt(formData.get('quantity')), condition: formData.get('condition') }
+                ]);
+                if (marError) throw marError;
+            }
+
+            this.showNotification('Mission Report Submitted!', 'success');
+            setTimeout(() => window.location.href = 'dashboard.html', 1500);
+
+        } catch (err) {
+            console.error("Submission Error:", err);
+            this.showNotification("Failed to submit report. Please try again.", 'error');
+            if(submitBtn) {
+                submitBtn.innerText = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        }
+    },
+
+
 
 
 
