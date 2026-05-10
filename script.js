@@ -572,6 +572,38 @@ const app = {
         }
     },
 
+    //Deletion  Logic
+     deleteReport(id) {
+        this.reportToDelete = id;
+        document.getElementById('confirm-delete-modal')?.classList.remove('hidden-section');
+    },
+
+    closeDeleteModal() {
+        this.reportToDelete = null;
+        document.getElementById('confirm-delete-modal')?.classList.add('hidden-section');
+    },
+
+    async executeDelete() {
+        if (!this.reportToDelete) return; 
+        
+        // 🚨 DEFENSE NOTE: CASCADE DELETION 🚨
+        // Because we set up 'ON DELETE CASCADE' in PostgreSQL when creating the 
+        // tbl_pollution and tbl_marine tables, deleting the main report here 
+        // automatically deletes the linked rows in those sub-tables!
+        const { error } = await supabaseClient.from('tbl_reports').delete().eq('id', this.reportToDelete);
+        
+        if (error) {
+            this.showNotification("Error deleting report.", 'error');
+        } else {
+            this.closeDeleteModal(); 
+            this.showNotification('Report Deleted!', 'success');
+            this.loadProfile();
+            if (currentPage === 'dashboard.html') this.loadDash(); 
+        }
+    },
+
+
+
 
 
 
