@@ -53,6 +53,57 @@ const app = {
         const editProfileForm = document.getElementById('edit-profile-form');
         if (editProfileForm) editProfileForm.addEventListener('submit', (e) => { e.preventDefault(); this.saveProfile(e); });
 
+                // --- UI LISTENERS ---
+        const searchInput = document.getElementById('search-ledger');
+        if (searchInput) searchInput.addEventListener('input', () => this.renderLedger());
+
+        const sortSelect = document.getElementById('sort-ledger');
+        if (sortSelect) sortSelect.addEventListener('change', () => this.renderLedger());
+
+        const editBtn = document.getElementById('edit-profile-btn');
+        if (editBtn) editBtn.addEventListener('click', () => this.openEditProfile());
+
+        // --- MOBILE SIDEBAR LOGIC ---
+        const toggleSidebar = () => {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        };
+
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const closeBtn = document.querySelector('.close-sidebar-btn');
+        const overlay = document.querySelector('.sidebar-overlay');
+
+        if (menuBtn) menuBtn.addEventListener('click', toggleSidebar);
+        if (closeBtn) closeBtn.addEventListener('click', toggleSidebar);
+        if (overlay) overlay.addEventListener('click', toggleSidebar);
+    },   
+    
+    showNotification(message, type = 'success') {
+        if (type === 'success') {
+            let pill = document.getElementById('global-success-pill');
+            if (!pill) {
+                pill = document.createElement('div');
+                pill.id = 'global-success-pill';
+                pill.className = 'success-pill';
+                document.body.appendChild(pill);
+            }
+            pill.classList.remove('show');
+            pill.innerText = message;
+            setTimeout(() => pill.classList.add('show'), 50);
+            setTimeout(() => pill.classList.remove('show'), 3000);
+        } else {
+            let errorDisplay = document.querySelector('.error-text');
+            if (errorDisplay) {
+                errorDisplay.innerText = message;
+                errorDisplay.style.display = 'block';
+                setTimeout(() => { errorDisplay.style.display = 'none'; }, 5000);
+            } else {
+                alert(message);
+            }
+        }
+    },
+
+
 
 
 
