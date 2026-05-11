@@ -27,7 +27,7 @@ const app = {
     async init() {
 console.log("AgosTrack Supabase Engine Initializing...");
         
-        // --- BULLETPROOF AUTH CHECK ---
+
         const { data: { session } } = await supabaseClient.auth.getSession();
         
         if (session && session.user) {
@@ -215,7 +215,7 @@ console.log("AgosTrack Supabase Engine Initializing...");
         console.log("Fetching Cloud Dashboard Data...");
         const email = currentUserEmail;
 
-        //inner join to get the user's name along with their reports
+        //inner join to get the user's name along with their reports using resource embedding of supabase.
         try {
             const { data: reports, error } = await supabaseClient
                 .from('tbl_reports')
@@ -438,7 +438,7 @@ console.log("AgosTrack Supabase Engine Initializing...");
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
         }
         
-        // added sql joim to also get the ranger's name along with the report data.
+        // added sql join to also get the ranger's name along with the report data.
         const { data, error } = await supabaseClient
             .from('tbl_reports')
             .select('*, tbl_users(name)'); 

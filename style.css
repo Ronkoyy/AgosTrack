@@ -390,19 +390,21 @@ input[type="radio"]:checked + .type-option.marine { border-color: #0ea5e9; backg
 
 
 
+/* --- LEAFLET POPUP CSS OVERRIDES --- */
 .leaflet-popup-content h4 {
-    color: #1f2937 !important;         /* Solid dark gray color */
-    text-shadow: none !important;      /* Removes any leaking shadows */
-    -webkit-text-stroke: 0 !important; /* Removes any hollow outlines */
-    font-size: 1.1rem !important;
+    -webkit-text-stroke: 0 !important;
+    color: #1f2937 !important;
+    text-shadow: none !important;
     font-weight: 700 !important;
-    margin: 10px 0 5px 0 !important;
-    font-family: inherit !important;
 }
 
-.leaflet-popup-content p {
-    color: #64748b !important;
+.leaflet-popup-content p, 
+.leaflet-popup-content strong {
+    -webkit-text-stroke: 0 !important;
+    color: #475569 !important;
     text-shadow: none !important;
-    margin: 0 !important;
-    font-size: 0.9rem !important;
+}
+
+.leaflet-popup-content strong {
+    color: #0f172a !important; /* Makes the name and status slightly darker */
 }
