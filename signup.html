@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - AgosTrack</title>
+    <title>Sign Up - AgostTrack</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="auth-bg">
@@ -22,19 +21,19 @@
                 <p style="color: #6b7280;">Create your Ranger profile</p>
             </div>
             
-            <!-- Removed PHP action and method. script.js now handles this via Supabase -->
-            <form id="signup-form">
+            <!-- UPDATED ACTION PATH HERE -->
+            <form id="signup-form" action="php/signup.php" method="POST">
                 <div class="input-group">
                     <label>Full Name</label>
-                    <input type="text" id="name" name="name" placeholder="John Doe" required>
+                    <input type="text" id="signup-name" name="fullname" required placeholder="Juan Dela Cruz">
                 </div>
                 <div class="input-group">
                     <label>Email</label>
-                    <input type="email" id="email" name="email" placeholder="ranger@ocean.org" required>
+                    <input type="email" id="signup-email" name="email" required placeholder="ranger@ocean.org">
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+                    <input type="password" id="signup-password" name="password" required placeholder="Create a strong password">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">REGISTER</button>
             </form>

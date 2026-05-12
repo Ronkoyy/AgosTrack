@@ -9,10 +9,7 @@
     <!-- External Libraries: FontAwesome, Google Fonts, and Chart.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- FIXED: Using the UMD version so charts render correctly -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
@@ -56,27 +53,18 @@
         <!-- MAIN DASHBOARD CONTENT -->
         <main>
             <!-- HEADER SECTION -->
-            <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: end;">
                 <div>
                     <h2 class="page-title">Mission Dashboard</h2>
                     <p style="color: var(--text-light);">
-                     Welcome back, <span id="user-name-display" style="color: var(--primary); font-weight: 700;">Ranger</span> 👋
+                        Welcome back, <span id="user-name-display" style="color: var(--primary); font-weight: 700;">Ranger</span> 👋
                     </p>
                 </div>
-    
-            <div style="display: flex; align-items: center; gap: 20px;">
-        
+                
                 <div id="dashboard-badge" class="badge-pill hidden-section" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);">
-            <i class="fa-solid fa-medal"></i> <span id="badge-text">Volunteer</span>
+                    <i class="fa-solid fa-medal"></i> <span id="badge-text">Volunteer</span>
+                </div>
             </div>
-
-            <div style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.8); padding: 5px 15px 5px 5px; border-radius: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; cursor: pointer; transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="window.location.href='profile.html'">
-            <img id="top-nav-profile-pic" src="https://ui-avatars.com/api/?name=R&background=009688&color=fff" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-            <span id="top-nav-profile-name" style="font-weight: 700; color: #1f2937; font-size: 0.95rem;">Ranger</span>
-        </div>
-
-    </div>
-</div>
 
             <!-- TOP STATS GRID -->
             <div class="grid-3">
@@ -113,9 +101,8 @@
             </div>
 
             <!-- MIDDLE CHARTS GRID -->
-            <div class="grid-3">
-                <!-- 1. Waste Analysis -->
-                <div class="card waste-analysis-container">
+            <div class="grid-2">
+                <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 style="font-size: 1.1rem; font-weight: 700;">Waste Analysis</h3>
                         <button class="btn-outline" onclick="app.openWasteDetails()" style="padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; border: 1px solid #cbd5e1; background: white;">
@@ -127,15 +114,6 @@
                     </div>
                 </div>
 
-                <!-- 2. NEW: Severity Alert -->
-                <div class="card">
-                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 20px;">Severity Alert</h3>
-                    <div class="chart-container">
-                        <canvas id="severityChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- 3. Recent Activity -->
                 <div class="card">
                     <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 20px;">Recent Activity</h3>
                     <div id="activity-feed" class="feed-container">
@@ -146,26 +124,10 @@
 
             <!-- SQL INNER JOIN LEDGER TABLE (With Status & Actions) -->
             <div class="card" style="margin-top: 30px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3 style="font-size: 1.1rem; font-weight: 700;">
                         <i class="fa-solid fa-table-list" style="color: var(--primary); margin-right: 5px;"></i> Detailed Reports Ledger
                     </h3>
-                    
-                    <!-- 🚨 SEARCH & SORT UI STARTS HERE 🚨 -->
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <div style="position: relative;">
-                            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-                            <input type="text" id="search-ledger" placeholder="Search location, type, or ID..." style="padding: 8px 12px 8px 35px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Poppins', sans-serif; outline: none; width: 250px;">
-                        </div>
-                        <select id="sort-ledger" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Poppins', sans-serif; outline: none; cursor: pointer; color: #475569;">
-                            <option value="newest">Newest First</option>
-                            <option value="oldest">Oldest First</option>
-                            <option value="pending">Pending First</option>
-                            <option value="completed">Completed First</option>
-                        </select>
-                    </div>
-                    <!-- 🚨 SEARCH & SORT UI ENDS HERE 🚨 -->
-                    
                 </div>
                 
                 <div style="overflow-x: auto;">
