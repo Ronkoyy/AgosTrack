@@ -71,6 +71,17 @@ const app = {
         if (menuBtn) menuBtn.addEventListener('click', toggleSidebar);
         if (closeBtn) closeBtn.addEventListener('click', toggleSidebar);
         if (overlay) overlay.addEventListener('click', toggleSidebar);
+
+                window.addEventListener('scroll', () => {
+            const nav = document.getElementById('main-nav');
+            const hero = document.querySelector('.hero-bg'); 
+            if(nav) {
+                let threshold = 50; 
+                if (hero) threshold = hero.offsetHeight - 80; 
+                if(window.scrollY > threshold) nav.classList.add('scrolled');
+                else nav.classList.remove('scrolled');
+            }
+        });
     },
 
     toggleFormFields() {
@@ -233,53 +244,45 @@ const app = {
             .catch(err => console.error("Dashboard error:", err));
     },
 
-    renderLedger() {
+renderLedger() {
         const tbody = document.getElementById('joined-reports-body');
         if (!tbody) return;
 
-        const searchTerm = (document.getElementById('search-ledger')?.value || "").toLowerCase();
+        // Get what the user typed
+        const searchTerm = document.getElementById('search-ledger')?.value || "";
         const sortValue = document.getElementById('sort-ledger')?.value || 'newest';
 
-        let filtered = this.allReports.filter(r => 
-            (r.placeName || "").toLowerCase().includes(searchTerm) || 
-            (r.type || "").toLowerCase().includes(searchTerm) ||
-            r.id.toString().includes(searchTerm)
-        );
+        // Ask the PHP Database to search for it
+        fetch(`php/search_ledger.php?email=${currentUserEmail}&search=${encodeURIComponent(searchTerm)}&sort=${sortValue}`)
+            .then(res => res.json())
+            .then(filtered => {
+                tbody.innerHTML = '';
+                if (filtered.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:#9ca3af;">No reports found matching your search.</td></tr>';
+                } else {
+                    filtered.forEach(r => {
+                        let statusColor = r.status === 'Completed' ? '#10b981' : '#f59e0b';
+                        let actionBtn = r.status === 'Pending' 
+                            ? `<button onclick="app.markDone(${r.id})" style="background:#009688; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-weight:600; font-size:0.8rem;">Mark Done</button>` 
+                            : `<span style="color:#10b981; font-weight:bold;"><i class="fa-solid fa-check-circle"></i> Done</span>`;
 
-        filtered.sort((a, b) => {
-            if (sortValue === 'newest') return b.id - a.id;
-            if (sortValue === 'oldest') return a.id - b.id;
-            if (sortValue === 'pending') return a.status === 'Pending' ? -1 : 1;
-            if (sortValue === 'completed') return a.status === 'Completed' ? -1 : 1;
-            return 0;
-        });
+                        let typeIcon = r.type === 'pollution' ? '<i class="fa-solid fa-trash-can" style="color:#ef4444; margin-right:5px;"></i>' : '<i class="fa-solid fa-fish-fins" style="color:#0ea5e9; margin-right:5px;"></i>';
 
-        tbody.innerHTML = '';
-        if (filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:#9ca3af;">No reports found.</td></tr>';
-        } else {
-            filtered.forEach(r => {
-                let statusColor = r.status === 'Completed' ? '#10b981' : '#f59e0b';
-                let actionBtn = r.status === 'Pending' 
-                    ? `<button onclick="app.markDone(${r.id})" style="background:#009688; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-weight:600; font-size:0.8rem;">Mark Done</button>` 
-                    : `<span style="color:#10b981; font-weight:bold;"><i class="fa-solid fa-check-circle"></i> Done</span>`;
-
-                let typeIcon = r.type === 'pollution' ? '<i class="fa-solid fa-trash-can" style="color:#ef4444; margin-right:5px;"></i>' : '<i class="fa-solid fa-fish-fins" style="color:#0ea5e9; margin-right:5px;"></i>';
-                let rangerName = r.rangerName || currentUserName;
-
-                tbody.innerHTML += `
-                    <tr style="border-bottom: 1px solid #e2e8f0; transition: background 0.2s;">
-                        <td style="padding: 15px; font-weight:600;">#${r.id}</td>
-                        <td style="padding: 15px;"><b>${rangerName}</b></td>
-                        <td style="padding: 15px; color:#475569;">${r.placeName}</td>
-                        <td style="padding: 15px; color:#64748b;">${new Date(r.date).toLocaleDateString()}</td>
-                        <td style="padding: 15px; text-transform:capitalize;">${typeIcon} ${r.type}</td>
-                        <td style="padding: 15px;"><span style="color:${statusColor}; font-weight:700; background:${statusColor}20; padding:4px 8px; border-radius:20px; font-size:0.85rem;">${r.status}</span></td>
-                        <td style="padding: 15px;">${actionBtn}</td>
-                    </tr>
-                `;
-            });
-        }
+                        tbody.innerHTML += `
+                            <tr style="border-bottom: 1px solid #e2e8f0; transition: background 0.2s;">
+                                <td style="padding: 15px; font-weight:600;">#${r.id}</td>
+                                <td style="padding: 15px;"><b>${r.rangerName}</b></td>
+                                <td style="padding: 15px; color:#475569;">${r.placeName}</td>
+                                <td style="padding: 15px; color:#64748b;">${r.date}</td>
+                                <td style="padding: 15px; text-transform:capitalize;">${typeIcon} ${r.type}</td>
+                                <td style="padding: 15px;"><span style="color:${statusColor}; font-weight:700; background:${statusColor}20; padding:4px 8px; border-radius:20px; font-size:0.85rem;">${r.status}</span></td>
+                                <td style="padding: 15px;">${actionBtn}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            })
+            .catch(err => console.error("Search Fetch Error:", err));
     },
 
     initCharts(data) {

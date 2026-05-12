@@ -6,24 +6,20 @@
     <title>Dashboard - AgosTrack </title>
     <link rel="icon" type="image/png" href="logo.png">
     
-    <!-- External Libraries: FontAwesome, Google Fonts, and Chart.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="app-view">
-        <!-- MOBILE HEADER -->
         <div class="mobile-app-header">
             <button class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
             <span style="font-weight: 800; font-size: 1.2rem; color: #009688;">AgosTrack</span>
         </div>
         <div class="sidebar-overlay"></div>
 
-        <!-- SIDEBAR NAVIGATION -->
         <aside id="sidebar">
             <div class="sidebar-header">
                 <i class="fa-solid fa-water" style="color: var(--primary);"></i> 
@@ -50,9 +46,7 @@
             </nav>
         </aside>
 
-        <!-- MAIN DASHBOARD CONTENT -->
         <main>
-            <!-- HEADER SECTION -->
             <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: end;">
                 <div>
                     <h2 class="page-title">Mission Dashboard</h2>
@@ -66,10 +60,8 @@
                 </div>
             </div>
 
-            <!-- TOP STATS GRID -->
             <div class="grid-3">
                 
-                <!-- Reports Completed Chart Card -->
                 <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
                     <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: #1f2937;">
                         <i class="fa-solid fa-list-check" style="color: var(--primary); margin-right: 5px;"></i> Reports Completed
@@ -100,7 +92,6 @@
                 </div>
             </div>
 
-            <!-- MIDDLE CHARTS GRID -->
             <div class="grid-2">
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -117,17 +108,25 @@
                 <div class="card">
                     <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 20px;">Recent Activity</h3>
                     <div id="activity-feed" class="feed-container">
-                        <!-- Feed items will go here -->
-                    </div>
+                        </div>
                 </div>
             </div>
 
-            <!-- SQL INNER JOIN LEDGER TABLE (With Status & Actions) -->
             <div class="card" style="margin-top: 30px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
                     <h3 style="font-size: 1.1rem; font-weight: 700;">
                         <i class="fa-solid fa-table-list" style="color: var(--primary); margin-right: 5px;"></i> Detailed Reports Ledger
                     </h3>
+                    
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="text" id="search-ledger" placeholder="Search location or type..." style="padding: 8px 15px; border-radius: 20px; border: 1px solid #cbd5e1; outline: none; font-family: inherit; width: 220px;">
+                        <select id="sort-ledger" style="padding: 8px 15px; border-radius: 20px; border: 1px solid #cbd5e1; outline: none; font-family: inherit; background: white;">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="pending">Pending First</option>
+                            <option value="completed">Completed First</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div style="overflow-x: auto;">
@@ -144,8 +143,7 @@
                             </tr>
                         </thead>
                         <tbody id="joined-reports-body">
-                            <!-- Data will be injected here by AlaSQL via script.js -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
                 <p id="empty-ledger-msg" style="text-align: center; color: #9ca3af; margin-top: 20px; display: none;">No reports found in the database.</p>
@@ -154,7 +152,6 @@
         </main>
     </div>
 
-    <!-- MODALS -->
     <div id="waste-modal" class="modal-overlay hidden-section">
         <div class="modal-content" style="max-width: 400px;">
             <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -168,7 +165,6 @@
         </div>
     </div>
 
-    <!-- Core App Logic -->
     <script src="script.js"></script>
 </body>
 </html>
