@@ -6,7 +6,7 @@ if (isset($_GET['email'])) {
     $email = mysqli_real_escape_string($conn, $_GET['email']);
 
     // 1. Get User Info
-    $sql = "SELECT user_id, name, bio, birthday, age, rank, profilePic FROM tbl_users WHERE email = '$email'";
+    $sql = "SELECT id, name, bio, birthday, age, rank, profilePic FROM tbl_users WHERE email = '$email'";
     $result = $conn->query($sql);
 
     if ($result && $result->num_rows > 0) {

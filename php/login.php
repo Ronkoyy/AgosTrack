@@ -1,32 +1,19 @@
 <?php
-// login.php
-$servername = "localhost";
-$username = "root"; 
-$password = ""; 
-$dbname = "agostrack";
+header('Content-Type: application/json');
+require 'connection.php';
 
-// 1. Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$email = $_POST['email'] ?? '';
+$password = $_POST['password'] ?? '';
 
-// 2. Check connection - DO NOT ECHO ANYTHING HERE IF IT WORKS
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+$stmt = $conn->prepare("SELECT name, password FROM tbl_users WHERE email = ?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
-// 3. Get data from the JavaScript Fetch
-$email = $_POST['email'];
-$pass = $_POST['password'];
-
-// 4. Check user in database
-$sql = "SELECT * FROM tbl_users WHERE email = '$email' AND password = '$pass'";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    // 🚨 ONLY echo "success" and NOTHING ELSE
-    echo "success";
+if ($user && $user['password'] === $password) { // Note: Use password_hash in production
+    echo json_encode(['status' => 'success', 'name' => $user['name']]);
 } else {
-    echo "Invalid email or password";
+    echo json_encode(['status' => 'error', 'message' => 'Invalid email or password.']);
 }
-
-$conn->close();
 ?>

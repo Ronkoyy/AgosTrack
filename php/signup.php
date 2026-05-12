@@ -1,33 +1,27 @@
 <?php
-// signup.php
-$servername = "localhost";
-$username = "root"; 
-$password = ""; 
-$dbname = "agostrack";
+header('Content-Type: application/json');
+require 'connection.php';
 
-// 1. Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$name = $_POST['fullname'] ?? '';
+$email = $_POST['email'] ?? '';
+$password = $_POST['password'] ?? '';
+$rank = 'Volunteer';
 
-// 2. Check connection - DO NOT echo anything if it works!
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Check if email exists
+$check = $conn->prepare("SELECT email FROM tbl_users WHERE email = ?");
+$check->bind_param("s", $email);
+$check->execute();
+if ($check->get_result()->num_rows > 0) {
+    echo json_encode(['status' => 'error', 'message' => 'Email already registered.']);
+    exit;
 }
 
-// 3. Get data from the form (matching your HTML name attributes)
-$fullname = $_POST['fullname'];
-$email = $_POST['email'];
-$pass = $_POST['password'];
+$stmt = $conn->prepare("INSERT INTO tbl_users (email, name, password, rank) VALUES (?, ?, ?, ?)");
+$stmt->bind_param("ssss", $email, $name, $password, $rank);
 
-// 4. Insert into database (Defaulting rank to Volunteer Ranger)
-$sql = "INSERT INTO tbl_users (email, name, password, rank) 
-        VALUES ('$email', '$fullname', '$pass', 'Volunteer Ranger')";
-
-if ($conn->query($sql) === TRUE) {
-    // 🚨 ONLY echo "success" and NOTHING ELSE
-    echo "success";
+if ($stmt->execute()) {
+    echo json_encode(['status' => 'success']);
 } else {
-    echo "Error: " . $conn->error;
+    echo json_encode(['status' => 'error', 'message' => 'Database error.']);
 }
-
-$conn->close();
 ?>
